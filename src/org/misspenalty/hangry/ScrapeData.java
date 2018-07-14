@@ -1,4 +1,4 @@
-package site;
+package org.misspenalty.hangry;
 import java.util.LinkedList;
 import java.util.List;
 
