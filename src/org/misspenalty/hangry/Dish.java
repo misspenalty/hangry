@@ -1,9 +1,7 @@
 package org.misspenalty.hangry;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+
+import javax.persistence.*;
 
 @Entity 
 @Table (name="Dish")
@@ -13,13 +11,19 @@ public class Dish {
 	@Id
 	@GeneratedValue(generator="increment")
 	private Integer id;
-	
+	@ManyToOne
+    @JoinColumn(name="restaurant_id")
+	private Restaurant restaurant;
 	public Dish(String name) {
 		this.name = name;
 	}
 	
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	public void setRestaurant(Restaurant restaurant) {
+		this.restaurant = restaurant;
 	}
 
 	@Override

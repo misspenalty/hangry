@@ -1,7 +1,23 @@
 package org.misspenalty.hangry;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -13,33 +29,71 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class ScrapeData {
 	private static SessionFactory sessionFactory;
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException,
+			ParserConfigurationException, SAXException,
+			XPathExpressionException {
+		String siteMap = run("https://www.foodora.at/sitemap.xml");
+		// System.out.println(siteMap);
+
+		DocumentBuilderFactory builderFactory = DocumentBuilderFactory
+				.newInstance();
+		DocumentBuilder builder = builderFactory.newDocumentBuilder();
+		Document xmlDocument = builder.parse(new ByteArrayInputStream(siteMap
+				.getBytes(StandardCharsets.UTF_8)));
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		String expression = "/urlset/url/loc";
+		NodeList nodeList = (NodeList) xPath.compile(expression).evaluate(
+				xmlDocument, XPathConstants.NODESET);
+
+		List<String> restaurants = new LinkedList<String>();
+
+		for (int i = 0; i < nodeList.getLength(); i++) {
+			String link = nodeList.item(i).getTextContent();
+			if (link.contains(".at/chain/") || link.contains(".at/restaurant/")) {
+				System.out.println(link);
+				restaurants.add(link);
+			}
+		}
+
+		// Document document = new SAXReader().read(new StringReader(siteMap));
+		// String status = document.valueOf("/urlset/url/loc");
+		// System.out.println(status);
 		System.setProperty("webdriver.gecko.driver",
 				"/home/misspenalty/Selenium/geckodriver");
 		FirefoxOptions firefoxOptions = new FirefoxOptions();
 		firefoxOptions.setHeadless(true);
 		WebDriver driver = new FirefoxDriver(firefoxOptions);
 
-		LinkedList<String> restaurantPages = new LinkedList<>();
-		restaurantPages
-				.add("https://www.foodora.at/restaurant/s1ch/dhaka-indisches-bistro");
-
-		for (String restaurantPage : restaurantPages) {
-			LinkedList<Dish> foundDishes = scrapeRestaurantPage(restaurantPage,
-					driver);
-			Session session = createConnection();
+		Session session = createConnection();
+		for (String restaurantPage : restaurants) {
 			session.beginTransaction();
+			String restaurantName = scrapeNameFromRestaurantPage(
+					restaurantPage, driver);
+			Restaurant restaurant = new Restaurant(restaurantName,
+					restaurantPage);
+			session.save(restaurant);
+			LinkedList<Dish> foundDishes = scrapeDishesFromRestaurantPage(
+					restaurantPage, driver);
+			for (Dish fd : foundDishes) {
+				fd.setRestaurant(restaurant);
+			}
+			restaurant.setDishes(foundDishes);
+
 			for (Dish foundDish : foundDishes) {
 				session.save(foundDish);
 			}
 			session.getTransaction().commit();
-			session.close();
-		}
 
+		}
+		session.close();
 		driver.quit();
 
 	}
@@ -55,6 +109,7 @@ public class ScrapeData {
 			// The registry would be destroyed by the SessionFactory, but we had
 			// trouble building the SessionFactory
 			// so destroy it manually.
+			e.printStackTrace();
 			StandardServiceRegistryBuilder.destroy(registry);
 		}
 		// create a couple of events...
@@ -62,11 +117,19 @@ public class ScrapeData {
 		return session;
 	}
 
-	static public LinkedList<Dish> scrapeRestaurantPage(String restaurantPage,
-			WebDriver driver) {
+	static public String run(String url) throws IOException {
+		OkHttpClient client = new OkHttpClient();
+		Request request = new Request.Builder().url(url).build();
+
+		Response response = client.newCall(request).execute();
+		return response.body().string();
+	}
+
+	static public LinkedList<Dish> scrapeDishesFromRestaurantPage(
+			String restaurantPage, WebDriver driver) {
 		driver.get(restaurantPage);
 
-		LinkedList<Dish> foundDishes = new LinkedList<>();
+		LinkedList<Dish> foundDishes = new LinkedList<Dish>();
 		List<WebElement> dishes = driver.findElements(By
 				.cssSelector("div.dish-info"));
 		for (WebElement dish : dishes) {
@@ -90,4 +153,14 @@ public class ScrapeData {
 		return foundDishes;
 	}
 
+	static public String scrapeNameFromRestaurantPage(String restaurantPage,
+			WebDriver driver) {
+
+		driver.get(restaurantPage);
+		String restaurantName = driver.findElement(
+				By.cssSelector("div.vendor-info-main-headline.item")).getText();
+
+		System.out.println(restaurantName);
+		return restaurantName;
+	}
 }
