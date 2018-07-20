@@ -27,5 +27,13 @@ public class Restaurant {
 	public void setDishes(List<Dish> dishes) {
 		this.dishes = dishes;
 	}
+	
+	public String getName() {
+		return this.name;
+	}
+	
+	public String getRestaurantPage() {
+		return this.restaurantPage;
+	}
 
 }

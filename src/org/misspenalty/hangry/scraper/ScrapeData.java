@@ -1,4 +1,4 @@
-package org.misspenalty.hangry;
+package org.misspenalty.hangry.scraper;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -6,6 +6,10 @@ import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.misspenalty.hangry.Dish;
+import org.misspenalty.hangry.Restaurant;
+import org.openqa.selenium.NoSuchElementException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -55,7 +59,7 @@ public class ScrapeData {
 
 		List<String> restaurants = new LinkedList<String>();
 
-		for (int i = 0; i < nodeList.getLength(); i++) {
+		for (int i = 340; i < nodeList.getLength(); i++) {
 			String link = nodeList.item(i).getTextContent();
 			if (link.contains(".at/chain/") || link.contains(".at/restaurant/")) {
 				System.out.println(link);
@@ -70,15 +74,20 @@ public class ScrapeData {
 				"/home/misspenalty/Selenium/geckodriver");
 		FirefoxOptions firefoxOptions = new FirefoxOptions();
 		firefoxOptions.setHeadless(true);
-		WebDriver driver = new FirefoxDriver(firefoxOptions);
+		//firefoxOptions
+		WebDriver driver = new FirefoxDriver();
 
 		Session session = createConnection();
 		for (String restaurantPage : restaurants) {
-			session.beginTransaction();
 			String restaurantName = scrapeNameFromRestaurantPage(
 					restaurantPage, driver);
+			if (restaurantName == null) {
+				System.out.println("Failed scraping: " + restaurantPage);
+				continue;
+			}
 			Restaurant restaurant = new Restaurant(restaurantName,
 					restaurantPage);
+			session.beginTransaction();
 			session.save(restaurant);
 			LinkedList<Dish> foundDishes = scrapeDishesFromRestaurantPage(
 					restaurantPage, driver);
@@ -157,10 +166,12 @@ public class ScrapeData {
 			WebDriver driver) {
 
 		driver.get(restaurantPage);
-		String restaurantName = driver.findElement(
+		System.out.println(driver.getPageSource());
+		try {
+		 return driver.findElement(
 				By.cssSelector("div.vendor-info-main-headline.item")).getText();
-
-		System.out.println(restaurantName);
-		return restaurantName;
+		} catch (NoSuchElementException e) {
+			return null;
+		}
 	}
 }
