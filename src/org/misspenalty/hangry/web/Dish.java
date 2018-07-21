@@ -37,4 +37,8 @@ public class Dish {
 	public String getName() {
 		return this.name;
 	}
+	
+	public Restaurant getRestaurant() {
+		return this.restaurant;
+	}
 }
