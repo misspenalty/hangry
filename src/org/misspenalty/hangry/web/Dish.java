@@ -1,8 +1,7 @@
-package org.misspenalty.hangry;
+package org.misspenalty.hangry.web;
 
 
 import javax.persistence.*;
-
 @Entity 
 @Table (name="Dish")
 public class Dish {
@@ -18,6 +17,10 @@ public class Dish {
 		this.name = name;
 	}
 	
+	public Dish() {
+		
+	}
+	
 	public void setDescription(String description) {
 		this.description = description;
 	}
@@ -29,5 +32,9 @@ public class Dish {
 	@Override
 	public String toString() {
 		return "Dish [name=" + name + ", ingredients=" + description + "]";
+	}
+	
+	public String getName() {
+		return this.name;
 	}
 }

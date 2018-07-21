@@ -7,8 +7,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.misspenalty.hangry.Dish;
-import org.misspenalty.hangry.Restaurant;
+import org.misspenalty.hangry.web.Dish;
+import org.misspenalty.hangry.web.Restaurant;
 import org.openqa.selenium.NoSuchElementException;
 
 import javax.xml.parsers.DocumentBuilder;
