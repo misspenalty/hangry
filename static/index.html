@@ -36,6 +36,7 @@
 		</div>
 		<div class="row justify-content-center">
 			<div class="col-md-6 jobs_index_middle_panels">
+				<div id="searchresults"></div>
 				<div id="result"></div>
 			</div>
 
@@ -59,7 +60,7 @@
 																function(key,
 																		val) {
 																	items
-																			.push("<div class=\"row justify-content-center\">"
+																			.push( "<div class=\"row justify-content-center\">"
 																					+ "<div class=\"card card-body bg-light\">"
 																					+ "<a href=" + val['restaurant']['restaurantPage'] + ">"
 																					+ val['restaurant']['name']
@@ -69,10 +70,10 @@
 																					+ "</div>");
 																});
 												$("#result").html($("<ul/>", {
-													"class" : "dish-list",
 													html : items.join("")
 												}));
-
+												$("#searchresults").html("<ul><strong>" + items.length + "</strong> results found. </ul>");
+												
 											});
 						});
 	</script>
