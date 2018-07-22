@@ -1,0 +1,27 @@
+body {
+    background-color: powderblue;
+}
+h1 {
+    font-family: 'Pacifico', cursive !important;
+    color: #c60d5c !important;
+}
+p {
+    color: red;
+}
+
+a {
+	color: #c60d5c !important;
+}
+
+.card {
+	margin: 5px !important;
+}
+
+.btn {
+	background-color: #d70f64!important;
+	color: #fff;
+}
+
+.btn:hover {
+	background-color: #c60d5c !important;
+}
