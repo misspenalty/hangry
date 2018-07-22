@@ -1,2 +1,2 @@
 # hangry
-find the food you're craving near you
+a search engine for Foodora in Vienna
