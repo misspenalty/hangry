@@ -21,7 +21,7 @@ public class RestaurantController {
 
     @RequestMapping(value="/restaurant", method = RequestMethod.GET)
     public @ResponseBody List<Dish> restaurant(@RequestParam(value="dish") String dish) {
-    	return dishDao.findByNameLike(dish);
+    	return dishDao.findByNameContainingOrderByRestaurantNameAscNameAsc(dish);
     }
  
   
