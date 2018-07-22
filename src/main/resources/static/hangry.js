@@ -5,7 +5,7 @@ $('#search')
             var query = $("#dish").val();
             $
                 .getJSON(
-                    "/restaurant?dish=" + query,
+                    "/hangry/restaurant?dish=" + query,
                     function(data) {
                         var items = [];
                         $
