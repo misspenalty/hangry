@@ -23,10 +23,8 @@ $('#search')
                                             "</div>" +
                                             "</div>");
                                 });
-                        $("#result").html($("<ul/>", {
-                            html: items.join("")
-                        }));
-                        $("#searchresults").html("<ul><strong>" + items.length + "</strong> results found. </ul>");
+                        $("#result").html(items.join(""));
+                        $("#searchresults").html("<strong>" + items.length + "</strong> results found.");
 
                     });
         });
