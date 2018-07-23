@@ -14,16 +14,17 @@ import javax.persistence.Table;
 public class Restaurant {
 	private String name;
 	@Id
-	@GeneratedValue(generator="increment")
+	@GeneratedValue(generator = "increment")
 	private Integer id;
-	@Column(name="restaurantPage")
+	@Column(name = "restaurantPage")
 	private String restaurantPage;
 	@OneToMany(mappedBy = "restaurant")
 	private List<Dish> dishes;
-	
+
 	public Restaurant() {
-		
+
 	}
+
 	public Restaurant(String name, String restaurantPage) {
 		this.name = name;
 		this.restaurantPage = restaurantPage;
@@ -32,11 +33,11 @@ public class Restaurant {
 	public void setDishes(List<Dish> dishes) {
 		this.dishes = dishes;
 	}
-	
+
 	public String getName() {
 		return this.name;
 	}
-	
+
 	public String getRestaurantPage() {
 		return this.restaurantPage;
 	}
