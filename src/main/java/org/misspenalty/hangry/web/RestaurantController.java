@@ -25,14 +25,14 @@ public class RestaurantController {
 	@RequestMapping(value = "/restaurant", method = RequestMethod.GET)
 	public @ResponseBody List<Dish> restaurant(@RequestParam(value = "dish") String dish) {
 		if (dish.length() <= 2) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Search query must contain at least 3 characters.");
 		}
 		return dishDao.findByNameContainingOrderByRestaurantNameAscNameAsc(dish);
 	}
 	
 	@ExceptionHandler(IllegalArgumentException.class)
-	void handleBadRequests(HttpServletResponse response) throws IOException {
-		response.sendError(HttpStatus.BAD_REQUEST.value(), "Search query must contain at least 3 characters.");
+	void handleBadRequests(HttpServletResponse response, Exception exception) throws IOException {
+		response.sendError(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
 	}
 
 }
