@@ -25,7 +25,7 @@ $('#search')
                     $("#searchresults").html("<strong>" + items.length + "</strong> results found.");
                 })
                 .fail(function(jqXHR, textStatus, errorThrown) {
-                    if (jqXHR.status = 400) {
+                    if (jqXHR.status == 400) {
                         $("#result").html("");
                         $("#searchresults").html("<div class=\"row justify-content-center\">" +
                             JSON.parse(jqXHR.responseText)['message'] +
