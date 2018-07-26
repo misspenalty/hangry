@@ -20,14 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class RestaurantController {
 
 	@Autowired
-	private DishDao dishDao;
+	private DishService dishService;
 
 	@RequestMapping(value = "/restaurant", method = RequestMethod.GET)
 	public @ResponseBody List<Dish> restaurant(@RequestParam(value = "dish") String dish) {
-		if (dish.length() <= 2) {
-			throw new IllegalArgumentException("Search query must contain at least 3 characters.");
-		}
-		return dishDao.findByNameContainingOrderByRestaurantNameAscNameAsc(dish);
+		return dishService.getDishesContainingName(dish);
 	}
 	
 	@ExceptionHandler(IllegalArgumentException.class)

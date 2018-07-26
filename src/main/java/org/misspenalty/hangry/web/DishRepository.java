@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
-public interface DishDao extends CrudRepository<Dish, Integer> {
+public interface DishRepository extends CrudRepository<Dish, Integer> {
 
 	List<Dish> findByNameContainingOrderByRestaurantNameAscNameAsc(String dishName);
 
